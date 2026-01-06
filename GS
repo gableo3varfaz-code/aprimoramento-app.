@@ -614,6 +614,79 @@ function registrarQuestao(dados) {
 }
 
 /**
+ * Registra questões em lote (até 10) a partir de lista ou PDF
+ */
+function registrarQuestoesEmLote(dados) {
+  try {
+    var numeros = (dados.numeros || []).filter(function(n) { return n && n.toString().trim(); });
+    if (numeros.length === 0) {
+      return { success: false, error: 'Nenhuma questão informada.' };
+    }
+
+    if (numeros.length > 10) {
+      numeros = numeros.slice(0, 10);
+    }
+
+    var ss = getOrCreateSpreadsheet();
+    var sheet = ss.getSheetByName('Questoes');
+    var linhas = [];
+    var xpTotal = 0;
+
+    numeros.forEach(function(numero) {
+      var acertou = dados.acertou === true || dados.acertou === 'true' || dados.acertou === 'Sim';
+      var dificuldade = dados.dificuldade || 'Medio';
+      var xpGanho = acertou ? 10 : 5;
+      if (dificuldade === 'Dificil') xpGanho *= 2;
+      xpTotal += xpGanho;
+
+      linhas.push([
+        new Date(),
+        dados.materia,
+        numero,
+        acertou ? 'Sim' : 'Não',
+        dificuldade,
+        dados.tempo || '',
+        dados.linkQC || '',
+        dados.observacoes || 'Lote'
+      ]);
+    });
+
+    if (linhas.length > 0) {
+      sheet.getRange(sheet.getLastRow() + 1, 1, linhas.length, linhas[0].length).setValues(linhas);
+    }
+
+    var perfil = getPerfilJogador();
+    atualizarPerfil('QuestoesResolvidas', perfil.questoesResolvidas + linhas.length);
+
+    var dataRange = sheet.getDataRange().getValues();
+    var acertos = 0;
+    var total = 0;
+
+    for (var i = 1; i < dataRange.length; i++) {
+      total++;
+      if (dataRange[i][3] === 'Sim') acertos++;
+    }
+
+    var percentual = total > 0 ? (acertos / total) * 100 : 0;
+    atualizarPerfil('PercentualAcerto', percentual.toFixed(2));
+
+    var resultado = adicionarXP(xpTotal);
+
+    return {
+      success: true,
+      xpGanho: xpTotal,
+      levelUp: resultado.levelUp,
+      novoNivel: resultado.nivelAtual,
+      percentualAtual: percentual.toFixed(2),
+      questoesRegistradas: linhas.length,
+      titulo: resultado.titulo
+    };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+/**
  * Upload de PDF e conversão para texto
  */
 function processarPDF(fileId) {

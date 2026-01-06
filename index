@@ -593,7 +593,13 @@
                             🔥 Streak: <span id="streakDias">0</span> dias
                         </p>
                     </div>
-                    <button class="btn btn-secondary" onclick="definirMeta('Diaria')">Alterar Meta</button>
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label class="form-label" for="metaDiariaInput">Atualizar meta diária (horas)</label>
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <input type="number" step="0.5" class="form-control" id="metaDiariaInput" style="max-width: 160px;">
+                            <button class="btn btn-secondary" onclick="salvarMeta('Diaria', 'metaDiariaInput')">Salvar</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="card">
@@ -605,7 +611,13 @@
                             <div class="progress-text" id="textSemanal">0h / 25h</div>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="definirMeta('Semanal')">Alterar Meta</button>
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label class="form-label" for="metaSemanalInput">Atualizar meta semanal (horas)</label>
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <input type="number" step="0.5" class="form-control" id="metaSemanalInput" style="max-width: 160px;">
+                            <button class="btn btn-secondary" onclick="salvarMeta('Semanal', 'metaSemanalInput')">Salvar</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -705,6 +717,65 @@
                     <input type="url" class="form-control" id="questaoLink" placeholder="Link da questão">
                 </div>
                 <button class="btn btn-primary" onclick="registrarQuestao()">💾 REGISTRAR QUESTÃO</button>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">📂 REGISTRO EM LOTE (PDF ou Lista)</h3>
+                <p style="font-size: 12px; color: #a8b2d1; margin-bottom: 12px;">Cole o ID de um PDF no Drive (com questões) ou uma lista de números. Vamos registrar até 10 questões de uma vez.</p>
+                <div class="form-group">
+                    <label class="form-label" for="pdfFileId">ID do PDF no Drive (opcional)</label>
+                    <input type="text" class="form-control" id="pdfFileId" placeholder="Ex: 1AbCdEf..." />
+                    <button class="btn btn-secondary" style="margin-top: 10px;" onclick="extrairQuestoesDoPDF()">📑 Extrair números do PDF</button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="questoesLoteNumeros">Números das questões (uma por linha ou separados por vírgula)</label>
+                    <textarea class="form-control" id="questoesLoteNumeros" rows="4" placeholder="Q101\nQ102\nQ103"></textarea>
+                    <small style="color: #a8b2d1;">Limite: 10 questões por envio.</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Todas as questões deste lote são:</label>
+                    <div class="grid-2">
+                        <div>
+                            <label class="form-label">Matéria</label>
+                            <select class="form-control" id="questaoLoteMateria">
+                                <option>Direito Constitucional</option>
+                                <option>Direito Administrativo</option>
+                                <option>Direito Civil</option>
+                                <option>Direito Processual Civil</option>
+                                <option>Direito Penal</option>
+                                <option>Direito Processual Penal</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Dificuldade</label>
+                            <select class="form-control" id="questaoLoteDificuldade">
+                                <option>Facil</option>
+                                <option>Medio</option>
+                                <option>Dificil</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="grid-2">
+                        <div>
+                            <label class="form-label">Acertou?</label>
+                            <select class="form-control" id="questaoLoteAcertou">
+                                <option value="true">✅ Sim</option>
+                                <option value="false">❌ Não</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Tempo médio (minutos)</label>
+                            <input type="number" class="form-control" id="questaoLoteTempo" placeholder="Ex: 3" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Link do PDF / Plataforma (opcional)</label>
+                    <input type="url" class="form-control" id="questaoLoteLink" placeholder="https://drive.google.com/..." />
+                </div>
+                <button class="btn btn-primary" onclick="registrarQuestoesEmLote()">🚀 Registrar até 10 questões</button>
             </div>
 
             <div class="card">
@@ -811,6 +882,7 @@ Pergunta 2;Resposta 2;"></textarea>
         // Inicializar
         window.onload = function() {
             carregarDados();
+            setupEnterShortcuts();
         };
 
         function carregarDados() {
@@ -823,12 +895,60 @@ Pergunta 2;Resposta 2;"></textarea>
                     atualizarInterface();
                 })
                 .getUserInfo();
-            
+
             google.script.run
                 .withSuccessHandler(function(stats) {
                     atualizarEstatisticas(stats);
                 })
                 .getEstatisticasCompletas();
+        }
+
+        function setupEnterShortcuts() {
+            ['estudoTema', 'estudoHoras', 'estudoLink'].forEach(function(id) {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            registrarEstudo();
+                        }
+                    });
+                }
+            });
+
+            ['questaoNumero', 'questaoTempo', 'questaoLink'].forEach(function(id) {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            registrarQuestao();
+                        }
+                    });
+                }
+            });
+
+            [['metaDiariaInput', 'Diaria'], ['metaSemanalInput', 'Semanal']].forEach(function(pair) {
+                const el = document.getElementById(pair[0]);
+                if (el) {
+                    el.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            salvarMeta(pair[1], pair[0]);
+                        }
+                    });
+                }
+            });
+
+            const loteArea = document.getElementById('questoesLoteNumeros');
+            if (loteArea) {
+                loteArea.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' && e.ctrlKey) {
+                        e.preventDefault();
+                        registrarQuestoesEmLote();
+                    }
+                });
+            }
         }
 
         function atualizarInterface() {
@@ -855,11 +975,15 @@ Pergunta 2;Resposta 2;"></textarea>
                         document.getElementById('progressDiaria').style.width = progresso + '%';
                         document.getElementById('textDiaria').textContent = meta.progresso + 'h / ' + meta.valor + 'h';
                         document.getElementById('metaDiaria').textContent = meta.valor;
+                        const metaDiariaInput = document.getElementById('metaDiariaInput');
+                        if (metaDiariaInput) metaDiariaInput.value = meta.valor;
                     } else if (meta.tipo === 'Semanal') {
                         const progresso = (meta.progresso / meta.valor) * 100;
                         document.getElementById('progressSemanal').style.width = progresso + '%';
                         document.getElementById('textSemanal').textContent = meta.progresso + 'h / ' + meta.valor + 'h';
                         document.getElementById('metaSemanal').textContent = meta.valor;
+                        const metaSemanalInput = document.getElementById('metaSemanalInput');
+                        if (metaSemanalInput) metaSemanalInput.value = meta.valor;
                     }
                 });
             }
@@ -893,15 +1017,27 @@ Pergunta 2;Resposta 2;"></textarea>
         function definirMeta(tipo) {
             const valor = prompt('Digite a meta em horas para ' + (tipo === 'Diaria' ? 'hoje' : 'esta semana') + ':');
             if (valor && !isNaN(valor) && parseFloat(valor) > 0) {
-                google.script.run
-                    .withSuccessHandler(function(result) {
-                        if (result.success) {
-                            showNotification('Meta definida!', 'success');
-                            carregarDados();
-                        }
-                    })
-                    .definirMeta(tipo, parseFloat(valor));
+                salvarMeta(tipo, null, parseFloat(valor));
             }
+        }
+
+        function salvarMeta(tipo, inputId, valorManual) {
+            const valorCampo = inputId ? parseFloat(document.getElementById(inputId).value) : null;
+            const valor = valorManual !== undefined ? valorManual : valorCampo;
+
+            if (!valor || isNaN(valor) || valor <= 0) {
+                alert('Digite um valor válido para a meta.');
+                return;
+            }
+
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result.success) {
+                        showNotification('Meta definida!', 'success');
+                        carregarDados();
+                    }
+                })
+                .definirMeta(tipo, parseFloat(valor));
         }
 
         function registrarEstudo() {
@@ -970,6 +1106,88 @@ Pergunta 2;Resposta 2;"></textarea>
                     }
                 })
                 .registrarQuestao(dados);
+        }
+
+        function getNumerosQuestaoLote() {
+            const raw = document.getElementById('questoesLoteNumeros').value || '';
+            const candidatos = raw.split(/[\n,;]+/).map(v => v.trim()).filter(Boolean);
+            const unicos = [];
+            candidatos.forEach(function(numero) {
+                if (!unicos.includes(numero)) {
+                    unicos.push(numero);
+                }
+            });
+            return unicos.slice(0, 10);
+        }
+
+        function extrairQuestoesDoPDF() {
+            const fileId = (document.getElementById('pdfFileId').value || '').trim();
+            if (!fileId) {
+                alert('Informe o ID do PDF no Drive.');
+                return;
+            }
+
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result.success) {
+                        const numerosEncontrados = (result.texto.match(/Q?\s?(\d{2,6})/g) || []).map(function(item) {
+                            return item.replace(/[^0-9]/g, '').trim();
+                        }).filter(Boolean);
+                        const unicos = [];
+                        numerosEncontrados.forEach(function(num) {
+                            if (!unicos.includes(num)) {
+                                unicos.push(num);
+                            }
+                        });
+                        const limitados = unicos.slice(0, 10);
+                        if (limitados.length === 0) {
+                            alert('Não foi possível localizar números de questões no PDF.');
+                            return;
+                        }
+                        document.getElementById('questoesLoteNumeros').value = limitados.join('\n');
+                        showNotification('Foram sugeridas ' + limitados.length + ' questões do PDF.', 'success');
+                    } else {
+                        alert('Erro ao processar PDF: ' + result.error);
+                    }
+                })
+                .processarPDF(fileId);
+        }
+
+        function registrarQuestoesEmLote() {
+            const numeros = getNumerosQuestaoLote();
+            if (numeros.length === 0) {
+                alert('Informe ao menos uma questão (máximo de 10).');
+                return;
+            }
+
+            const dados = {
+                materia: document.getElementById('questaoLoteMateria').value,
+                dificuldade: document.getElementById('questaoLoteDificuldade').value,
+                acertou: document.getElementById('questaoLoteAcertou').value === 'true',
+                tempo: document.getElementById('questaoLoteTempo').value,
+                linkQC: document.getElementById('questaoLoteLink').value,
+                observacoes: 'Lote',
+                numeros: numeros
+            };
+
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result.success) {
+                        showNotification('+' + result.xpGanho + ' XP para ' + result.questoesRegistradas + ' questões!', 'success');
+                        if (result.levelUp) {
+                            showLevelUpAnimation(result.novoNivel);
+                            setTimeout(function() {
+                                showNotification('🎉 Novo Título: ' + result.titulo, 'level-up');
+                            }, 1600);
+                        }
+                        document.getElementById('questoesLoteNumeros').value = '';
+                        document.getElementById('pdfFileId').value = '';
+                        carregarDados();
+                    } else {
+                        alert(result.error || 'Não foi possível registrar o lote.');
+                    }
+                })
+                .registrarQuestoesEmLote(dados);
         }
 
         function criarFlashcard() {
