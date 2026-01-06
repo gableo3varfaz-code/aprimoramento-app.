@@ -1,0 +1,1086 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N.E.X.U.S. - Sistema de Estudos</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Press+Start+2P&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #16213e, #1a1a2e);
+            border: 2px solid #00d9ff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.2);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 3px solid #00d9ff;
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.5);
+        }
+
+        .level-badge {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            background: #e94560;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 13px;
+            border: 2px solid #0a0e27;
+        }
+
+        .user-info h2 {
+            font-size: 22px;
+            color: #00d9ff;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        .user-info h2:hover {
+            text-decoration: underline;
+        }
+
+        .user-title {
+            font-size: 12px;
+            color: #a8b2d1;
+            margin-bottom: 10px;
+        }
+
+        .xp-bar-container {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            height: 20px;
+            width: 250px;
+            position: relative;
+            border: 1px solid #00d9ff;
+            overflow: hidden;
+        }
+
+        .xp-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #e94560, #00d9ff);
+            transition: width 0.5s;
+        }
+
+        .xp-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px;
+            font-weight: 700;
+            text-shadow: 0 0 3px black;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-box {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid #0f3460;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 900;
+            color: #00d9ff;
+        }
+
+        .stat-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            color: #a8b2d1;
+            margin-top: 3px;
+        }
+
+        /* Navigation */
+        .nav-menu {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 12px 15px;
+            background: linear-gradient(135deg, #16213e, #0f3460);
+            border: 2px solid #00d9ff;
+            color: #ffffff;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 217, 255, 0.3);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, #e94560, #c0392b);
+            border-color: #e94560;
+        }
+
+        /* Content */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #16213e, #1a1a2e);
+            border: 2px solid #0f3460;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 900;
+            color: #00d9ff;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 11px;
+            color: #00d9ff;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #0f3460;
+            color: #ffffff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            border-radius: 6px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #00d9ff;
+        }
+
+        select.form-control option {
+            background: #16213e;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 25px;
+            border: 2px solid;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #e94560, #c0392b);
+            border-color: #e94560;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #0f3460, #0a2342);
+            border-color: #00d9ff;
+            color: #00d9ff;
+        }
+
+        /* Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            height: 25px;
+            position: relative;
+            border: 1px solid #0f3460;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #e94560, #00d9ff);
+            transition: width 0.5s;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px;
+            font-weight: 700;
+            text-shadow: 0 0 3px black;
+        }
+
+        /* Mission Cards */
+        .mission-card {
+            background: rgba(0, 217, 255, 0.05);
+            border-left: 3px solid #00d9ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .mission-card h4 {
+            color: #00d9ff;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        /* Links */
+        .link-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 3px solid #00d9ff;
+        }
+
+        .link-item a {
+            color: #00d9ff;
+            text-decoration: none;
+            font-size: 13px;
+            flex: 1;
+        }
+
+        .link-item a:hover {
+            text-decoration: underline;
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #e94560;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            border: 2px solid #00d9ff;
+            display: none;
+            z-index: 9999;
+            animation: slideIn 0.5s;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .notification.show {
+            display: block;
+        }
+
+        .notification.level-up {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        /* Animação Level Up - Estilo Pixel Art */
+        .level-up-animation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000;
+            display: none;
+            text-align: center;
+            animation: levelUpAppear 1.5s ease-out;
+        }
+
+        .level-up-animation.show {
+            display: block;
+        }
+
+        @keyframes levelUpAppear {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            20% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+            40% {
+                transform: translate(-50%, -50%) scale(0.95);
+            }
+            60% {
+                transform: translate(-50%, -50%) scale(1.05);
+            }
+            80% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+        }
+
+        .level-up-text {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 48px;
+            color: #FFD700;
+            text-shadow: 
+                3px 3px 0px #FF8C00,
+                -1px -1px 0px #000,
+                1px -1px 0px #000,
+                -1px 1px 0px #000,
+                1px 1px 0px #000,
+                0 0 20px #FFD700;
+            margin-bottom: 20px;
+            animation: textPulse 0.3s infinite alternate;
+        }
+
+        @keyframes textPulse {
+            from { text-shadow: 3px 3px 0px #FF8C00, 0 0 20px #FFD700; }
+            to { text-shadow: 3px 3px 0px #FF8C00, 0 0 40px #FFD700; }
+        }
+
+        .level-up-number {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 64px;
+            color: #FFFFFF;
+            text-shadow: 
+                4px 4px 0px #FF8C00,
+                -2px -2px 0px #000,
+                2px -2px 0px #000,
+                -2px 2px 0px #000,
+                2px 2px 0px #000,
+                0 0 30px #FFD700;
+        }
+
+        .level-up-stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #FFD700;
+            clip-path: polygon(
+                50% 0%, 61% 35%, 98% 35%, 68% 57%, 
+                79% 91%, 50% 70%, 21% 91%, 32% 57%, 
+                2% 35%, 39% 35%
+            );
+            animation: starBurst 1.5s ease-out forwards;
+        }
+
+        @keyframes starBurst {
+            0% {
+                transform: translate(0, 0) scale(0);
+                opacity: 1;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--x), var(--y)) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .sparkle {
+            position: absolute;
+            font-size: 24px;
+            animation: sparkleFloat 1s ease-out forwards;
+        }
+
+        @keyframes sparkleFloat {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(0.5);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1);
+            }
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 3px solid rgba(0, 217, 255, 0.1);
+            border-top: 3px solid #00d9ff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+            }
+            
+            .nav-menu {
+                flex-direction: column;
+            }
+            
+            .nav-btn {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="user-profile">
+                    <div style="position: relative;">
+                        <img id="userAvatar" class="avatar" src="" alt="Avatar">
+                        <div class="level-badge" id="userLevel">1</div>
+                    </div>
+                    <div class="user-info">
+                        <h2 id="userName" onclick="editarNome()">Usuário</h2>
+                        <div class="user-title" id="userTitle">Concurseiro Iniciante</div>
+                        <div class="xp-bar-container">
+                            <div class="xp-bar" id="xpBar" style="width: 0%"></div>
+                            <div class="xp-text" id="xpText">0 / 100 XP</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-box">
+                        <div class="stat-value" id="statHoras">0h</div>
+                        <div class="stat-label">HORAS</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="statQuestoes">0</div>
+                        <div class="stat-label">QUESTÕES</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="statAcerto">0%</div>
+                        <div class="stat-label">ACERTO</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-menu">
+            <button class="nav-btn active" onclick="showSection('dashboard')">🎯 DASHBOARD</button>
+            <button class="nav-btn" onclick="showSection('estudos')">📚 ESTUDOS</button>
+            <button class="nav-btn" onclick="showSection('questoes')">🎮 QUESTÕES</button>
+            <button class="nav-btn" onclick="showSection('flashcards')">🃏 FLASHCARDS</button>
+            <button class="nav-btn" onclick="showSection('ia')">🤖 IA TOOLS</button>
+            <button class="nav-btn" onclick="showSection('stats')">📊 STATS</button>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="content-section active">
+            <div class="grid-2">
+                <div class="card">
+                    <h3 class="card-title">📋 MISSÃO DIÁRIA</h3>
+                    <div class="mission-card">
+                        <h4>Meta: <span id="metaDiaria">4</span> horas</h4>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="progressDiaria" style="width: 0%"></div>
+                            <div class="progress-text" id="textDiaria">0h / 4h</div>
+                        </div>
+                        <p style="font-size: 11px; color: #a8b2d1; margin-top: 8px;">
+                            🔥 Streak: <span id="streakDias">0</span> dias
+                        </p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="definirMeta('Diaria')">Alterar Meta</button>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">📈 MISSÃO SEMANAL</h3>
+                    <div class="mission-card">
+                        <h4>Meta: <span id="metaSemanal">25</span> horas</h4>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="progressSemanal" style="width: 0%"></div>
+                            <div class="progress-text" id="textSemanal">0h / 25h</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="definirMeta('Semanal')">Alterar Meta</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">📊 DISTRIBUIÇÃO POR EIXO</h3>
+                <div id="distribuicaoEixo"></div>
+            </div>
+        </div>
+
+        <!-- Estudos Section -->
+        <div id="estudos" class="content-section">
+            <div class="card">
+                <h3 class="card-title">📚 REGISTRAR ESTUDO</h3>
+                <div class="form-group">
+                    <label class="form-label">Matéria</label>
+                    <select class="form-control" id="estudoMateria">
+                        <option>Direito Constitucional</option>
+                        <option>Direito Administrativo</option>
+                        <option>Direito Civil</option>
+                        <option>Direito Processual Civil</option>
+                        <option>Direito Penal</option>
+                        <option>Direito Processual Penal</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Eixo</label>
+                    <select class="form-control" id="estudoEixo">
+                        <option>Lei Seca</option>
+                        <option>Jurisprudencia</option>
+                        <option>Doutrina</option>
+                        <option>Questoes</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tema</label>
+                    <input type="text" class="form-control" id="estudoTema" placeholder="Ex: Princípios Fundamentais">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Horas Estudadas</label>
+                    <input type="number" class="form-control" id="estudoHoras" step="0.5" placeholder="Ex: 2.5">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Link DOD (Opcional)</label>
+                    <input type="url" class="form-control" id="estudoLink" placeholder="https://www.dizerodireito.com.br/...">
+                </div>
+                <button class="btn btn-primary" onclick="registrarEstudo()">💾 REGISTRAR ESTUDO</button>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">🔗 LINKS ÚTEIS</h3>
+                <div class="link-item">
+                    <a href="https://www.dizerodireito.com.br" target="_blank">📖 Dizer o Direito</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Questões Section -->
+        <div id="questoes" class="content-section">
+            <div class="card">
+                <h3 class="card-title">🎮 REGISTRAR QUESTÃO</h3>
+                <div class="form-group">
+                    <label class="form-label">Matéria</label>
+                    <select class="form-control" id="questaoMateria">
+                        <option>Direito Constitucional</option>
+                        <option>Direito Administrativo</option>
+                        <option>Direito Civil</option>
+                        <option>Direito Processual Civil</option>
+                        <option>Direito Penal</option>
+                        <option>Direito Processual Penal</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Número da Questão</label>
+                    <input type="text" class="form-control" id="questaoNumero" placeholder="Ex: Q123456">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Acertou?</label>
+                    <select class="form-control" id="questaoAcertou">
+                        <option value="true">✅ Sim</option>
+                        <option value="false">❌ Não</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Dificuldade</label>
+                    <select class="form-control" id="questaoDificuldade">
+                        <option>Facil</option>
+                        <option>Medio</option>
+                        <option>Dificil</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tempo (minutos)</label>
+                    <input type="number" class="form-control" id="questaoTempo" placeholder="Ex: 3">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Link (Opcional)</label>
+                    <input type="url" class="form-control" id="questaoLink" placeholder="Link da questão">
+                </div>
+                <button class="btn btn-primary" onclick="registrarQuestao()">💾 REGISTRAR QUESTÃO</button>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">🔗 PLATAFORMAS DE QUESTÕES</h3>
+                <div class="link-item">
+                    <a href="https://www.qconcursos.com" target="_blank">🎯 QConcursos</a>
+                </div>
+                <div class="link-item">
+                    <a href="https://www.fgv.br/fgvprojetos/concursos/" target="_blank">📄 Provas FGV (ENAM)</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flashcards Section -->
+        <div id="flashcards" class="content-section">
+            <div class="card">
+                <h3 class="card-title">🃏 CRIAR FLASHCARD</h3>
+                <div class="form-group">
+                    <label class="form-label">Matéria</label>
+                    <select class="form-control" id="fcMateria">
+                        <option>Direito Constitucional</option>
+                        <option>Direito Administrativo</option>
+                        <option>Direito Civil</option>
+                        <option>Direito Processual Civil</option>
+                        <option>Direito Penal</option>
+                        <option>Direito Processual Penal</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Frente (Pergunta)</label>
+                    <textarea class="form-control" id="fcFrente" rows="3" placeholder="Digite a pergunta..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Verso (Resposta)</label>
+                    <textarea class="form-control" id="fcVerso" rows="3" placeholder="Digite a resposta..."></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="criarFlashcard()">💾 CRIAR FLASHCARD</button>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">📤 IMPORTAR CSV (ANKI)</h3>
+                <div class="form-group">
+                    <label class="form-label">Matéria</label>
+                    <select class="form-control" id="csvMateria">
+                        <option>Direito Constitucional</option>
+                        <option>Direito Administrativo</option>
+                        <option>Direito Civil</option>
+                        <option>Direito Processual Civil</option>
+                        <option>Direito Penal</option>
+                        <option>Direito Processual Penal</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Conteúdo CSV (frente;verso;)</label>
+                    <textarea class="form-control" id="csvContent" rows="6" placeholder="Pergunta 1;Resposta 1;
+Pergunta 2;Resposta 2;"></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="importarCSV()">📥 IMPORTAR</button>
+            </div>
+        </div>
+
+        <!-- IA Tools Section -->
+        <div id="ia" class="content-section">
+            <div class="card">
+                <h3 class="card-title">🤖 FERRAMENTAS DE IA</h3>
+                <div class="link-item">
+                    <a href="https://chat.openai.com" target="_blank">💬 ChatGPT</a>
+                </div>
+                <div class="link-item">
+                    <a href="https://gemini.google.com" target="_blank">✨ Gemini</a>
+                </div>
+                <div class="link-item">
+                    <a href="https://chat.openai.com/gpts" target="_blank">🎮 Gizmo (GPTs)</a>
+                </div>
+                <div class="link-item">
+                    <a href="https://notebooklm.google.com" target="_blank">📓 NotebookLM</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div id="stats" class="content-section">
+            <div class="card">
+                <h3 class="card-title">📊 ESTATÍSTICAS EM TEMPO REAL</h3>
+                <div id="statsContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <!-- Level Up Animation -->
+    <div class="level-up-animation" id="levelUpAnimation">
+        <div class="level-up-stars" id="levelUpStars"></div>
+        <div class="level-up-text">+1 LEVEL</div>
+        <div class="level-up-number" id="levelUpNumber">2</div>
+    </div>
+
+    <script>
+        let userData = null;
+        let perfilData = null;
+
+        // Inicializar
+        window.onload = function() {
+            carregarDados();
+        };
+
+        function carregarDados() {
+            google.script.run
+                .withSuccessHandler(function(user) {
+                    userData = user;
+                    document.getElementById('userAvatar').src = user.picture;
+                    document.getElementById('userName').textContent = user.name;
+                    document.getElementById('userLevel').textContent = user.nivel;
+                    atualizarInterface();
+                })
+                .getUserInfo();
+            
+            google.script.run
+                .withSuccessHandler(function(stats) {
+                    atualizarEstatisticas(stats);
+                })
+                .getEstatisticasCompletas();
+        }
+
+        function atualizarInterface() {
+            if (!userData) return;
+            
+            const xpPercent = (userData.xp / userData.xpProximoNivel) * 100;
+            document.getElementById('xpBar').style.width = xpPercent + '%';
+            document.getElementById('xpText').textContent = userData.xp + ' / ' + userData.xpProximoNivel + ' XP';
+        }
+
+        function atualizarEstatisticas(stats) {
+            if (!stats || !stats.perfil) return;
+            
+            perfilData = stats.perfil;
+            document.getElementById('userTitle').textContent = stats.perfil.titulo;
+            document.getElementById('statHoras').textContent = stats.perfil.horasEstudadas.toFixed(1) + 'h';
+            document.getElementById('statQuestoes').textContent = stats.perfil.questoesResolvidas;
+            document.getElementById('statAcerto').textContent = stats.perfil.percentualAcerto + '%';
+            
+            if (stats.metas && stats.metas.length > 0) {
+                stats.metas.forEach(function(meta) {
+                    if (meta.tipo === 'Diaria') {
+                        const progresso = (meta.progresso / meta.valor) * 100;
+                        document.getElementById('progressDiaria').style.width = progresso + '%';
+                        document.getElementById('textDiaria').textContent = meta.progresso + 'h / ' + meta.valor + 'h';
+                        document.getElementById('metaDiaria').textContent = meta.valor;
+                    } else if (meta.tipo === 'Semanal') {
+                        const progresso = (meta.progresso / meta.valor) * 100;
+                        document.getElementById('progressSemanal').style.width = progresso + '%';
+                        document.getElementById('textSemanal').textContent = meta.progresso + 'h / ' + meta.valor + 'h';
+                        document.getElementById('metaSemanal').textContent = meta.valor;
+                    }
+                });
+            }
+        }
+
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function editarNome() {
+            const novoNome = prompt('Digite seu nome:', userData.name);
+            if (novoNome && novoNome.trim()) {
+                google.script.run
+                    .withSuccessHandler(function(result) {
+                        if (result.success) {
+                            userData.name = result.nome;
+                            document.getElementById('userName').textContent = result.nome;
+                            showNotification('Nome atualizado!', 'success');
+                        }
+                    })
+                    .atualizarNomeUsuario(novoNome.trim());
+            }
+        }
+
+        function definirMeta(tipo) {
+            const valor = prompt('Digite a meta em horas para ' + (tipo === 'Diaria' ? 'hoje' : 'esta semana') + ':');
+            if (valor && !isNaN(valor) && parseFloat(valor) > 0) {
+                google.script.run
+                    .withSuccessHandler(function(result) {
+                        if (result.success) {
+                            showNotification('Meta definida!', 'success');
+                            carregarDados();
+                        }
+                    })
+                    .definirMeta(tipo, parseFloat(valor));
+            }
+        }
+
+        function registrarEstudo() {
+            const dados = {
+                materia: document.getElementById('estudoMateria').value,
+                eixo: document.getElementById('estudoEixo').value,
+                tema: document.getElementById('estudoTema').value,
+                horas: parseFloat(document.getElementById('estudoHoras').value),
+                linkDOD: document.getElementById('estudoLink').value
+            };
+            
+            if (!dados.tema || !dados.horas || dados.horas <= 0) {
+                alert('Preencha todos os campos obrigatórios!');
+                return;
+            }
+            
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result.success) {
+                        showNotification('+' + result.xpGanho + ' XP ganhos!', 'success');
+                        if (result.levelUp) {
+                            showLevelUpAnimation(result.novoNivel);
+                            setTimeout(function() {
+                                showNotification('🎉 Novo Título: ' + result.titulo, 'level-up');
+                            }, 1600);
+                        }
+                        document.getElementById('estudoTema').value = '';
+                        document.getElementById('estudoHoras').value = '';
+                        document.getElementById('estudoLink').value = '';
+                        carregarDados();
+                    }
+                })
+                .registrarEstudo(dados);
+        }
+
+        function registrarQuestao() {
+            const dados = {
+                materia: document.getElementById('questaoMateria').value,
+                numero: document.getElementById('questaoNumero').value,
+                acertou: document.getElementById('questaoAcertou').value === 'true',
+                dificuldade: document.getElementById('questaoDificuldade').value,
+                tempo: document.getElementById('questaoTempo').value,
+                linkQC: document.getElementById('questaoLink').value,
+                observacoes: ''
+            };
+            
+            if (!dados.numero) {
+                alert('Preencha o número da questão!');
+                return;
+            }
+            
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result.success) {
+                        showNotification('+' + result.xpGanho + ' XP! Acerto: ' + result.percentualAtual + '%', 'success');
+                        if (result.levelUp) {
+                            showLevelUpAnimation(result.novoNivel);
+                            setTimeout(function() {
+                                showNotification('🎉 Novo Título: ' + result.titulo, 'level-up');
+                            }, 1600);
+                        }
+                        document.getElementById('questaoNumero').value = '';
+                        document.getElementById('questaoTempo').value = '';
+                        document.getElementById('questaoLink').value = '';
+                        carregarDados();
+                    }
+                })
+                .registrarQuestao(dados);
+        }
+
+        function criarFlashcard() {
+            const dados = {
+                materia: document.getElementById('fcMateria').value,
+                frente: document.getElementById('fcFrente').value,
+                verso: document.getElementById('fcVerso').value,
+                dificuldade: 'Medio'
+            };
+            
+            if (!dados.frente || !dados.verso) {
+                alert('Preencha frente e verso!');
+                return;
+            }
+            
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result.success) {
+                        showNotification('Flashcard criado!', 'success');
+                        document.getElementById('fcFrente').value = '';
+                        document.getElementById('fcVerso').value = '';
+                    }
+                })
+                .criarFlashcard(dados);
+        }
+
+        function importarCSV() {
+            const materia = document.getElementById('csvMateria').value;
+            const content = document.getElementById('csvContent').value;
+            
+            if (!content.trim()) {
+                alert('Cole o conteúdo CSV!');
+                return;
+            }
+            
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result.success) {
+                        showNotification(result.importados + ' flashcards importados!', 'success');
+                        document.getElementById('csvContent').value = '';
+                    }
+                })
+                .importarFlashcardsCSV(content, materia);
+        }
+
+        function showNotification(message, type) {
+            const notif = document.getElementById('notification');
+            notif.textContent = message;
+            notif.className = 'notification show';
+            if (type === 'level-up') {
+                notif.classList.add('level-up');
+            }
+            setTimeout(function() {
+                notif.classList.remove('show');
+            }, 3000);
+        }
+
+        function showLevelUpAnimation(nivel) {
+            const animation = document.getElementById('levelUpAnimation');
+            const numberElement = document.getElementById('levelUpNumber');
+            const starsContainer = document.getElementById('levelUpStars');
+            
+            // Atualiza número do nível
+            numberElement.textContent = nivel;
+            
+            // Limpa estrelas antigas
+            starsContainer.innerHTML = '';
+            
+            // Cria 8 estrelas ao redor
+            const starPositions = [
+                { x: 0, y: -150 },
+                { x: 106, y: -106 },
+                { x: 150, y: 0 },
+                { x: 106, y: 106 },
+                { x: 0, y: 150 },
+                { x: -106, y: 106 },
+                { x: -150, y: 0 },
+                { x: -106, y: -106 }
+            ];
+            
+            starPositions.forEach((pos, index) => {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = '50%';
+                star.style.top = '50%';
+                star.style.setProperty('--x', pos.x + 'px');
+                star.style.setProperty('--y', pos.y + 'px');
+                star.style.animationDelay = (index * 0.05) + 's';
+                starsContainer.appendChild(star);
+            });
+            
+            // Cria sparkles aleatórios
+            for (let i = 0; i < 20; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.textContent = '+';
+                sparkle.style.left = (Math.random() * 100) + '%';
+                sparkle.style.top = (Math.random() * 100) + '%';
+                sparkle.style.animationDelay = (Math.random() * 0.5) + 's';
+                sparkle.style.color = Math.random() > 0.5 ? '#FFD700' : '#FF8C00';
+                starsContainer.appendChild(sparkle);
+            }
+            
+            // Mostra animação
+            animation.classList.add('show');
+            
+            // Remove após 1.5s
+            setTimeout(function() {
+                animation.classList.remove('show');
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
