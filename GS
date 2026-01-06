@@ -522,10 +522,13 @@ function registrarEstudo(dados) {
     
     var perfil = getPerfilJogador();
     atualizarPerfil('HorasEstudadas', perfil.horasEstudadas + dados.horas);
-    
+
     // Atualiza meta
     atualizarProgressoMeta('Diaria', dados.horas);
     atualizarProgressoMeta('Semanal', dados.horas);
+    if (dados.eixo === 'Lei Seca' && dados.materia === 'Direito Constitucional') {
+      atualizarProgressoMeta('LeiSecaConstDiaria', dados.horas);
+    }
     
     var resultado = adicionarXP(xpGanho);
     
@@ -582,10 +585,11 @@ function registrarQuestao(dados) {
       dados.linkQC || '',
       dados.observacoes || ''
     ]);
-    
+
     var perfil = getPerfilJogador();
     atualizarPerfil('QuestoesResolvidas', perfil.questoesResolvidas + 1);
-    
+    atualizarProgressoMeta('QuestoesDiarias', 1);
+
     var dataRange = sheet.getDataRange().getValues();
     var acertos = 0;
     var total = 0;
@@ -657,6 +661,7 @@ function registrarQuestoesEmLote(dados) {
 
     var perfil = getPerfilJogador();
     atualizarPerfil('QuestoesResolvidas', perfil.questoesResolvidas + linhas.length);
+    atualizarProgressoMeta('QuestoesDiarias', linhas.length);
 
     var dataRange = sheet.getDataRange().getValues();
     var acertos = 0;
@@ -668,6 +673,81 @@ function registrarQuestoesEmLote(dados) {
     }
 
     var percentual = total > 0 ? (acertos / total) * 100 : 0;
+    atualizarPerfil('PercentualAcerto', percentual.toFixed(2));
+
+    var resultado = adicionarXP(xpTotal);
+
+    return {
+      success: true,
+      xpGanho: xpTotal,
+      levelUp: resultado.levelUp,
+      novoNivel: resultado.nivelAtual,
+      percentualAtual: percentual.toFixed(2),
+      questoesRegistradas: linhas.length,
+      titulo: resultado.titulo
+    };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Registrar bloco resumido de questões (ex.: 10 questões, X acertos)
+ */
+function registrarBlocoQuestoes(dados) {
+  try {
+    var total = parseInt(dados.totalQuestoes, 10) || 0;
+    var acertos = parseInt(dados.acertos, 10) || 0;
+
+    if (total <= 0 || total > 20) {
+      return { success: false, error: 'Informe entre 1 e 20 questões.' };
+    }
+
+    if (acertos < 0 || acertos > total) {
+      return { success: false, error: 'Quantidade de acertos inválida.' };
+    }
+
+    var ss = getOrCreateSpreadsheet();
+    var sheet = ss.getSheetByName('Questoes');
+    var linhas = [];
+    var xpTotal = 0;
+    var dificuldade = dados.dificuldade || 'Medio';
+    var acertouFlag;
+
+    for (var i = 0; i < total; i++) {
+      acertouFlag = i < acertos;
+      var xpGanho = acertouFlag ? 10 : 5;
+      if (dificuldade === 'Dificil') xpGanho *= 2;
+      xpTotal += xpGanho;
+
+      linhas.push([
+        new Date(),
+        dados.materia,
+        'BLQ-' + new Date().getTime() + '-' + (i + 1),
+        acertouFlag ? 'Sim' : 'Não',
+        dificuldade,
+        dados.tempo || '',
+        dados.linkQC || '',
+        dados.observacoes || 'Bloco resumido'
+      ]);
+    }
+
+    if (linhas.length > 0) {
+      sheet.getRange(sheet.getLastRow() + 1, 1, linhas.length, linhas[0].length).setValues(linhas);
+    }
+
+    var perfil = getPerfilJogador();
+    atualizarPerfil('QuestoesResolvidas', perfil.questoesResolvidas + linhas.length);
+    atualizarProgressoMeta('QuestoesDiarias', linhas.length);
+
+    var dataRange = sheet.getDataRange().getValues();
+    var totalQuestoes = dataRange.length - 1;
+    var acertosTotal = 0;
+    for (var j = 1; j < dataRange.length; j++) {
+      if (dataRange[j][3] === 'Sim') acertosTotal++;
+    }
+
+    var percentual = totalQuestoes > 0 ? (acertosTotal / totalQuestoes) * 100 : 0;
     atualizarPerfil('PercentualAcerto', percentual.toFixed(2));
 
     var resultado = adicionarXP(xpTotal);
@@ -866,6 +946,30 @@ function getLinksPorCategoria(categoria) {
     
   } catch (error) {
     return [];
+  }
+}
+
+/**
+ * Recupera bloco de notas/links salvo no usuário
+ */
+function getBlocoNotas() {
+  try {
+    var texto = CONFIG.USER_PROPERTIES.getProperty('blocoNotasLinks') || '';
+    return { success: true, texto: texto };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Salva bloco de notas/links para o usuário
+ */
+function salvarBlocoNotas(texto) {
+  try {
+    CONFIG.USER_PROPERTIES.setProperty('blocoNotasLinks', texto || '');
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
   }
 }
 

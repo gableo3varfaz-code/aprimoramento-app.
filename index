@@ -621,6 +621,45 @@
                 </div>
             </div>
 
+            <div class="grid-2">
+                <div class="card">
+                    <h3 class="card-title">🎯 MISSÃO DE QUESTÕES (DIA)</h3>
+                    <div class="mission-card">
+                        <h4>Meta: <span id="metaQuestoesDia">10</span> questões</h4>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="progressQuestoesDia" style="width: 0%"></div>
+                            <div class="progress-text" id="textQuestoesDia">0 / 10</div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label class="form-label" for="metaQuestoesDiaInput">Atualizar meta diária de questões</label>
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <input type="number" step="1" class="form-control" id="metaQuestoesDiaInput" style="max-width: 160px;">
+                            <button class="btn btn-secondary" onclick="salvarMeta('QuestoesDiarias', 'metaQuestoesDiaInput')">Salvar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">📜 LEI SECA - CONSTITUCIONAL</h3>
+                    <div class="mission-card">
+                        <h4>Meta: <span id="metaLeiSeca">2</span> horas</h4>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="progressLeiSeca" style="width: 0%"></div>
+                            <div class="progress-text" id="textLeiSeca">0h / 2h</div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label class="form-label" for="metaLeiSecaInput">Atualizar meta de Lei Seca (Constitucional)</label>
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <input type="number" step="0.5" class="form-control" id="metaLeiSecaInput" style="max-width: 160px;">
+                            <button class="btn btn-secondary" onclick="salvarMeta('LeiSecaConstDiaria', 'metaLeiSecaInput')">Salvar</button>
+                        </div>
+                    </div>
+                    <p style="font-size: 11px; color: #a8b2d1; margin-top: 4px;">Conte horas registradas como Lei Seca em Direito Constitucional.</p>
+                </div>
+            </div>
+
             <div class="card">
                 <h3 class="card-title">📊 DISTRIBUIÇÃO POR EIXO</h3>
                 <div id="distribuicaoEixo"></div>
@@ -779,6 +818,53 @@
             </div>
 
             <div class="card">
+                <h3 class="card-title">⚡ BLOCO RÁPIDO (10 questões)</h3>
+                <p style="font-size: 12px; color: #a8b2d1; margin-bottom: 12px;">Informe quantas acertou em um bloco de até 20 questões.</p>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="blocoTotal">Total de questões</label>
+                        <input type="number" min="1" max="20" class="form-control" id="blocoTotal" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="blocoAcertos">Acertos</label>
+                        <input type="number" min="0" max="20" class="form-control" id="blocoAcertos" value="8">
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Matéria</label>
+                        <select class="form-control" id="blocoMateria">
+                            <option>Direito Constitucional</option>
+                            <option>Direito Administrativo</option>
+                            <option>Direito Civil</option>
+                            <option>Direito Processual Civil</option>
+                            <option>Direito Penal</option>
+                            <option>Direito Processual Penal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Dificuldade média</label>
+                        <select class="form-control" id="blocoDificuldade">
+                            <option>Medio</option>
+                            <option>Facil</option>
+                            <option>Dificil</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Tempo médio (minutos)</label>
+                        <input type="number" class="form-control" id="blocoTempo" placeholder="Ex: 2.5">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Link (opcional)</label>
+                        <input type="url" class="form-control" id="blocoLink" placeholder="Fonte/Simulado">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="registrarBlocoQuestoes()">💥 Registrar bloco</button>
+            </div>
+
+            <div class="card">
                 <h3 class="card-title">🔗 PLATAFORMAS DE QUESTÕES</h3>
                 <div class="link-item">
                     <a href="https://www.qconcursos.com" target="_blank">🎯 QConcursos</a>
@@ -854,6 +940,14 @@ Pergunta 2;Resposta 2;"></textarea>
                     <a href="https://notebooklm.google.com" target="_blank">📓 NotebookLM</a>
                 </div>
             </div>
+
+            <div class="card">
+                <h3 class="card-title">🗒️ BLOCO DE NOTAS & LINKS</h3>
+                <p style="font-size: 12px; color: #a8b2d1; margin-bottom: 10px;">Guarde lembretes rápidos ou links de estudo.</p>
+                <textarea class="form-control" id="blocoNotas" rows="6" placeholder="Cole links ou lembretes importantes..."></textarea>
+                <button class="btn btn-secondary" style="margin-top: 10px;" onclick="salvarBlocoNotas()">💾 Salvar bloco</button>
+                <small style="color: #a8b2d1;">Salvo apenas para sua conta.</small>
+            </div>
         </div>
 
         <!-- Stats Section -->
@@ -901,6 +995,14 @@ Pergunta 2;Resposta 2;"></textarea>
                     atualizarEstatisticas(stats);
                 })
                 .getEstatisticasCompletas();
+
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result && result.success) {
+                        document.getElementById('blocoNotas').value = result.texto || '';
+                    }
+                })
+                .getBlocoNotas();
         }
 
         function setupEnterShortcuts() {
@@ -984,6 +1086,20 @@ Pergunta 2;Resposta 2;"></textarea>
                         document.getElementById('metaSemanal').textContent = meta.valor;
                         const metaSemanalInput = document.getElementById('metaSemanalInput');
                         if (metaSemanalInput) metaSemanalInput.value = meta.valor;
+                    } else if (meta.tipo === 'QuestoesDiarias') {
+                        const progresso = (meta.progresso / meta.valor) * 100;
+                        document.getElementById('progressQuestoesDia').style.width = progresso + '%';
+                        document.getElementById('textQuestoesDia').textContent = meta.progresso + ' / ' + meta.valor;
+                        document.getElementById('metaQuestoesDia').textContent = meta.valor;
+                        const metaQuestoesInput = document.getElementById('metaQuestoesDiaInput');
+                        if (metaQuestoesInput) metaQuestoesInput.value = meta.valor;
+                    } else if (meta.tipo === 'LeiSecaConstDiaria') {
+                        const progresso = (meta.progresso / meta.valor) * 100;
+                        document.getElementById('progressLeiSeca').style.width = progresso + '%';
+                        document.getElementById('textLeiSeca').textContent = meta.progresso + 'h / ' + meta.valor + 'h';
+                        document.getElementById('metaLeiSeca').textContent = meta.valor;
+                        const metaLeiSecaInput = document.getElementById('metaLeiSecaInput');
+                        if (metaLeiSecaInput) metaLeiSecaInput.value = meta.valor;
                     }
                 });
             }
@@ -1190,6 +1306,47 @@ Pergunta 2;Resposta 2;"></textarea>
                 .registrarQuestoesEmLote(dados);
         }
 
+        function registrarBlocoQuestoes() {
+            const total = parseInt(document.getElementById('blocoTotal').value, 10) || 0;
+            const acertos = parseInt(document.getElementById('blocoAcertos').value, 10) || 0;
+
+            if (total <= 0 || total > 20) {
+                alert('Informe entre 1 e 20 questões.');
+                return;
+            }
+            if (acertos < 0 || acertos > total) {
+                alert('Acertos não podem exceder o total.');
+                return;
+            }
+
+            const dados = {
+                totalQuestoes: total,
+                acertos: acertos,
+                materia: document.getElementById('blocoMateria').value,
+                dificuldade: document.getElementById('blocoDificuldade').value,
+                tempo: document.getElementById('blocoTempo').value,
+                linkQC: document.getElementById('blocoLink').value,
+                observacoes: 'Bloco rápido'
+            };
+
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result.success) {
+                        showNotification('+' + result.xpGanho + ' XP para ' + result.questoesRegistradas + ' questões!', 'success');
+                        if (result.levelUp) {
+                            showLevelUpAnimation(result.novoNivel);
+                            setTimeout(function() {
+                                showNotification('🎉 Novo Título: ' + result.titulo, 'level-up');
+                            }, 1600);
+                        }
+                        carregarDados();
+                    } else {
+                        alert(result.error || 'Não foi possível registrar o bloco.');
+                    }
+                })
+                .registrarBlocoQuestoes(dados);
+        }
+
         function criarFlashcard() {
             const dados = {
                 materia: document.getElementById('fcMateria').value,
@@ -1217,7 +1374,7 @@ Pergunta 2;Resposta 2;"></textarea>
         function importarCSV() {
             const materia = document.getElementById('csvMateria').value;
             const content = document.getElementById('csvContent').value;
-            
+
             if (!content.trim()) {
                 alert('Cole o conteúdo CSV!');
                 return;
@@ -1231,6 +1388,17 @@ Pergunta 2;Resposta 2;"></textarea>
                     }
                 })
                 .importarFlashcardsCSV(content, materia);
+        }
+
+        function salvarBlocoNotas() {
+            const texto = document.getElementById('blocoNotas').value || '';
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result && result.success) {
+                        showNotification('Bloco salvo!', 'success');
+                    }
+                })
+                .salvarBlocoNotas(texto);
         }
 
         function showNotification(message, type) {
@@ -1298,6 +1466,26 @@ Pergunta 2;Resposta 2;"></textarea>
             setTimeout(function() {
                 animation.classList.remove('show');
             }, 1500);
+        }
+
+        // Controles auxiliares do bloco rápido
+        const blocoTotalInput = document.getElementById('blocoTotal');
+        const blocoAcertosInput = document.getElementById('blocoAcertos');
+        if (blocoTotalInput && blocoAcertosInput) {
+            blocoTotalInput.addEventListener('input', function() {
+                if (blocoAcertosInput.value > blocoTotalInput.value) {
+                    blocoAcertosInput.value = blocoTotalInput.value;
+                }
+            });
+
+            blocoAcertosInput.addEventListener('input', function() {
+                if (blocoAcertosInput.value > blocoTotalInput.value) {
+                    blocoAcertosInput.value = blocoTotalInput.value;
+                }
+                if (blocoAcertosInput.value < 0) {
+                    blocoAcertosInput.value = 0;
+                }
+            });
         }
     </script>
 </body>
