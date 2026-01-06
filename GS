@@ -145,7 +145,7 @@ function getOrCreateSpreadsheet() {
  * Cria abas iniciais da planilha
  */
 function criarAbasIniciais(ss) {
-  var abas = ['Perfil', 'Metas', 'Estudos', 'Questoes', 'Flashcards', 'Revisoes', 'Links', 'Estatisticas'];
+  var abas = ['Perfil', 'Metas', 'Estudos', 'Questoes', 'Flashcards', 'Revisoes', 'Links', 'Estatisticas', 'Calendario'];
   
   abas.forEach(function(nomeAba) {
     var sheet = ss.getSheetByName(nomeAba);
@@ -176,6 +176,8 @@ function criarAbasIniciais(ss) {
         sheet.appendRow(['Questões', 'QConcursos', 'https://www.qconcursos.com', 'Plataforma de questões']);
         sheet.appendRow(['Questões', 'Provas FGV (ENAM)', 'https://www.fgv.br/fgvprojetos/concursos/', 'Provas anteriores']);
         sheet.appendRow(['Doutrina', 'Dizer o Direito', 'https://www.dizerodireito.com.br', 'Jurisprudência comentada']);
+      } else if (nomeAba === 'Calendario') {
+        sheet.appendRow(['Data', 'Itens', 'Concluidos']);
       }
     }
   });
@@ -990,6 +992,105 @@ function adicionarLink(categoria, nome, url, descricao) {
 }
 
 /**
+ * Obtém calendário do dia (lista de itens e status)
+ */
+function getCalendarioDoDia(dataStr) {
+  try {
+    var ss = getOrCreateSpreadsheet();
+    var sheet = ss.getSheetByName('Calendario');
+    if (!sheet) return { itens: [], concluidos: [] };
+
+    var dataAlvo = dataStr || Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'dd/MM/yyyy');
+    var data = sheet.getDataRange().getValues();
+
+    for (var i = 1; i < data.length; i++) {
+      if (data[i][0] === dataAlvo) {
+        var itens = [];
+        var concluidos = [];
+        try {
+          itens = JSON.parse(data[i][1] || '[]');
+        } catch (e) {
+          itens = [];
+        }
+        try {
+          concluidos = JSON.parse(data[i][2] || '[]');
+        } catch (e2) {
+          concluidos = [];
+        }
+        return { data: dataAlvo, itens: itens, concluidos: concluidos };
+      }
+    }
+
+    return { data: dataAlvo, itens: [], concluidos: [] };
+  } catch (error) {
+    return { data: dataStr, itens: [], concluidos: [], error: error.message };
+  }
+}
+
+/**
+ * Salva calendário do dia (itens como array de strings)
+ */
+function salvarCalendarioDoDia(itens, dataStr) {
+  try {
+    var ss = getOrCreateSpreadsheet();
+    var sheet = ss.getSheetByName('Calendario');
+    if (!sheet) {
+      sheet = ss.insertSheet('Calendario');
+      sheet.appendRow(['Data', 'Itens', 'Concluidos']);
+    }
+
+    var dataAlvo = dataStr || Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'dd/MM/yyyy');
+    var data = sheet.getDataRange().getValues();
+
+    for (var i = data.length - 1; i > 0; i--) {
+      if (data[i][0] === dataAlvo) {
+        sheet.deleteRow(i + 1);
+      }
+    }
+
+    var lista = Array.isArray(itens) ? itens.filter(function(item) { return item && item.trim(); }) : [];
+    var flags = lista.map(function() { return false; });
+
+    sheet.appendRow([dataAlvo, JSON.stringify(lista), JSON.stringify(flags)]);
+
+    return { success: true, data: dataAlvo, itens: lista };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Marca item do calendário do dia como concluído/não concluído
+ */
+function marcarItemCalendario(index, concluido, dataStr) {
+  try {
+    var ss = getOrCreateSpreadsheet();
+    var sheet = ss.getSheetByName('Calendario');
+    if (!sheet) return { success: false, error: 'Calendário não encontrado.' };
+
+    var dataAlvo = dataStr || Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'dd/MM/yyyy');
+    var data = sheet.getDataRange().getValues();
+
+    for (var i = 1; i < data.length; i++) {
+      if (data[i][0] === dataAlvo) {
+        var itens = JSON.parse(data[i][1] || '[]');
+        var flags = JSON.parse(data[i][2] || '[]');
+        if (index < 0 || index >= itens.length) {
+          return { success: false, error: 'Índice inválido.' };
+        }
+        flags[index] = concluido === true;
+        sheet.getRange(i + 1, 3).setValue(JSON.stringify(flags));
+        return { success: true, itens: itens, concluidos: flags, data: dataAlvo };
+      }
+    }
+
+    return { success: false, error: 'Calendário do dia não encontrado.' };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+/**
  * Obter estatísticas completas
  */
 function getEstatisticasCompletas() {
@@ -997,6 +1098,7 @@ function getEstatisticasCompletas() {
     var ss = getOrCreateSpreadsheet();
     var perfil = getPerfilJogador();
     var metas = getMetasAtivas();
+    var calendarioHoje = getCalendarioDoDia();
     
     // Estudos por matéria e eixo
     var sheetEstudos = ss.getSheetByName('Estudos');
@@ -1052,6 +1154,7 @@ function getEstatisticasCompletas() {
     return {
       perfil: perfil,
       metas: metas,
+      calendario: calendarioHoje,
       horasPorMateria: horasPorMateria,
       estudosPorEixo: estudosPorEixo,
       questoesPorMateria: questoesPorMateria,
