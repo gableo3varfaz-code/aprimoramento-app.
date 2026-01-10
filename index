@@ -311,6 +311,29 @@
             margin-bottom: 15px;
         }
 
+        .calendar-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 10px 0;
+        }
+
+        .calendar-list li {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            padding: 8px 10px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid #0f3460;
+            border-radius: 6px;
+            margin-bottom: 6px;
+        }
+
+        .calendar-list input[type="checkbox"] {
+            accent-color: #00d9ff;
+            width: 16px;
+            height: 16px;
+        }
+
         .mission-card h4 {
             color: #00d9ff;
             font-size: 14px;
@@ -593,7 +616,13 @@
                             🔥 Streak: <span id="streakDias">0</span> dias
                         </p>
                     </div>
-                    <button class="btn btn-secondary" onclick="definirMeta('Diaria')">Alterar Meta</button>
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label class="form-label" for="metaDiariaInput">Atualizar meta diária (horas)</label>
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <input type="number" step="0.5" class="form-control" id="metaDiariaInput" style="max-width: 160px;">
+                            <button class="btn btn-secondary" onclick="salvarMeta('Diaria', 'metaDiariaInput')">Salvar</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="card">
@@ -605,13 +634,78 @@
                             <div class="progress-text" id="textSemanal">0h / 25h</div>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="definirMeta('Semanal')">Alterar Meta</button>
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label class="form-label" for="metaSemanalInput">Atualizar meta semanal (horas)</label>
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <input type="number" step="0.5" class="form-control" id="metaSemanalInput" style="max-width: 160px;">
+                            <button class="btn btn-secondary" onclick="salvarMeta('Semanal', 'metaSemanalInput')">Salvar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3 class="card-title">🎯 MISSÃO DE QUESTÕES (DIA)</h3>
+                    <div class="mission-card">
+                        <h4>Meta: <span id="metaQuestoesDia">10</span> questões</h4>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="progressQuestoesDia" style="width: 0%"></div>
+                            <div class="progress-text" id="textQuestoesDia">0 / 10</div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label class="form-label" for="metaQuestoesDiaInput">Atualizar meta diária de questões</label>
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <input type="number" step="1" class="form-control" id="metaQuestoesDiaInput" style="max-width: 160px;">
+                            <button class="btn btn-secondary" onclick="salvarMeta('QuestoesDiarias', 'metaQuestoesDiaInput')">Salvar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">📜 LEI SECA - CONSTITUCIONAL</h3>
+                    <div class="mission-card">
+                        <h4>Meta: <span id="metaLeiSeca">2</span> horas</h4>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="progressLeiSeca" style="width: 0%"></div>
+                            <div class="progress-text" id="textLeiSeca">0h / 2h</div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label class="form-label" for="metaLeiSecaInput">Atualizar meta de Lei Seca (Constitucional)</label>
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <input type="number" step="0.5" class="form-control" id="metaLeiSecaInput" style="max-width: 160px;">
+                            <button class="btn btn-secondary" onclick="salvarMeta('LeiSecaConstDiaria', 'metaLeiSecaInput')">Salvar</button>
+                        </div>
+                    </div>
+                    <p style="font-size: 11px; color: #a8b2d1; margin-top: 4px;">Conte horas registradas como Lei Seca em Direito Constitucional.</p>
                 </div>
             </div>
 
             <div class="card">
                 <h3 class="card-title">📊 DISTRIBUIÇÃO POR EIXO</h3>
                 <div id="distribuicaoEixo"></div>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">🗓️ CALENDÁRIO DO DIA</h3>
+                <div class="mission-card">
+                    <h4 style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Plano diário</span>
+                        <small id="calendarioData" style="color: #a8b2d1; font-size: 11px;"></small>
+                    </h4>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progressCalendario" style="width: 0%"></div>
+                        <div class="progress-text" id="textCalendario">0 / 0 concluído</div>
+                    </div>
+                    <ul class="calendar-list" id="calendarioLista"></ul>
+                </div>
+                <div class="form-group" style="margin-top: 12px;">
+                    <label class="form-label" for="calendarioItensInput">Cole os itens do seu calendário (um por linha)</label>
+                    <textarea class="form-control" id="calendarioItensInput" rows="5" placeholder="Ex:\nDireito Penal - 2h (Lei Seca)\nRevisão de questões - 10 questões"></textarea>
+                </div>
+                <button class="btn btn-secondary" onclick="salvarCalendarioDia()">Salvar calendário do dia</button>
             </div>
         </div>
 
@@ -708,6 +802,112 @@
             </div>
 
             <div class="card">
+                <h3 class="card-title">📂 REGISTRO EM LOTE (PDF ou Lista)</h3>
+                <p style="font-size: 12px; color: #a8b2d1; margin-bottom: 12px;">Cole o ID de um PDF no Drive (com questões) ou uma lista de números. Vamos registrar até 10 questões de uma vez.</p>
+                <div class="form-group">
+                    <label class="form-label" for="pdfFileId">ID do PDF no Drive (opcional)</label>
+                    <input type="text" class="form-control" id="pdfFileId" placeholder="Ex: 1AbCdEf..." />
+                    <button class="btn btn-secondary" style="margin-top: 10px;" onclick="extrairQuestoesDoPDF()">📑 Extrair números do PDF</button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="questoesLoteNumeros">Números das questões (uma por linha ou separados por vírgula)</label>
+                    <textarea class="form-control" id="questoesLoteNumeros" rows="4" placeholder="Q101\nQ102\nQ103"></textarea>
+                    <small style="color: #a8b2d1;">Limite: 10 questões por envio.</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Todas as questões deste lote são:</label>
+                    <div class="grid-2">
+                        <div>
+                            <label class="form-label">Matéria</label>
+                            <select class="form-control" id="questaoLoteMateria">
+                                <option>Direito Constitucional</option>
+                                <option>Direito Administrativo</option>
+                                <option>Direito Civil</option>
+                                <option>Direito Processual Civil</option>
+                                <option>Direito Penal</option>
+                                <option>Direito Processual Penal</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Dificuldade</label>
+                            <select class="form-control" id="questaoLoteDificuldade">
+                                <option>Facil</option>
+                                <option>Medio</option>
+                                <option>Dificil</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="grid-2">
+                        <div>
+                            <label class="form-label">Acertou?</label>
+                            <select class="form-control" id="questaoLoteAcertou">
+                                <option value="true">✅ Sim</option>
+                                <option value="false">❌ Não</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Tempo médio (minutos)</label>
+                            <input type="number" class="form-control" id="questaoLoteTempo" placeholder="Ex: 3" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Link do PDF / Plataforma (opcional)</label>
+                    <input type="url" class="form-control" id="questaoLoteLink" placeholder="https://drive.google.com/..." />
+                </div>
+                <button class="btn btn-primary" onclick="registrarQuestoesEmLote()">🚀 Registrar até 10 questões</button>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">⚡ BLOCO RÁPIDO (10 questões)</h3>
+                <p style="font-size: 12px; color: #a8b2d1; margin-bottom: 12px;">Informe quantas acertou em um bloco de até 20 questões.</p>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="blocoTotal">Total de questões</label>
+                        <input type="number" min="1" max="20" class="form-control" id="blocoTotal" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="blocoAcertos">Acertos</label>
+                        <input type="number" min="0" max="20" class="form-control" id="blocoAcertos" value="8">
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Matéria</label>
+                        <select class="form-control" id="blocoMateria">
+                            <option>Direito Constitucional</option>
+                            <option>Direito Administrativo</option>
+                            <option>Direito Civil</option>
+                            <option>Direito Processual Civil</option>
+                            <option>Direito Penal</option>
+                            <option>Direito Processual Penal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Dificuldade média</label>
+                        <select class="form-control" id="blocoDificuldade">
+                            <option>Medio</option>
+                            <option>Facil</option>
+                            <option>Dificil</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Tempo médio (minutos)</label>
+                        <input type="number" class="form-control" id="blocoTempo" placeholder="Ex: 2.5">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Link (opcional)</label>
+                        <input type="url" class="form-control" id="blocoLink" placeholder="Fonte/Simulado">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="registrarBlocoQuestoes()">💥 Registrar bloco</button>
+            </div>
+
+            <div class="card">
                 <h3 class="card-title">🔗 PLATAFORMAS DE QUESTÕES</h3>
                 <div class="link-item">
                     <a href="https://www.qconcursos.com" target="_blank">🎯 QConcursos</a>
@@ -783,6 +983,14 @@ Pergunta 2;Resposta 2;"></textarea>
                     <a href="https://notebooklm.google.com" target="_blank">📓 NotebookLM</a>
                 </div>
             </div>
+
+            <div class="card">
+                <h3 class="card-title">🗒️ BLOCO DE NOTAS & LINKS</h3>
+                <p style="font-size: 12px; color: #a8b2d1; margin-bottom: 10px;">Guarde lembretes rápidos ou links de estudo.</p>
+                <textarea class="form-control" id="blocoNotas" rows="6" placeholder="Cole links ou lembretes importantes..."></textarea>
+                <button class="btn btn-secondary" style="margin-top: 10px;" onclick="salvarBlocoNotas()">💾 Salvar bloco</button>
+                <small style="color: #a8b2d1;">Salvo apenas para sua conta.</small>
+            </div>
         </div>
 
         <!-- Stats Section -->
@@ -811,6 +1019,7 @@ Pergunta 2;Resposta 2;"></textarea>
         // Inicializar
         window.onload = function() {
             carregarDados();
+            setupEnterShortcuts();
         };
 
         function carregarDados() {
@@ -823,12 +1032,68 @@ Pergunta 2;Resposta 2;"></textarea>
                     atualizarInterface();
                 })
                 .getUserInfo();
-            
+
             google.script.run
                 .withSuccessHandler(function(stats) {
                     atualizarEstatisticas(stats);
                 })
                 .getEstatisticasCompletas();
+
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result && result.success) {
+                        document.getElementById('blocoNotas').value = result.texto || '';
+                    }
+                })
+                .getBlocoNotas();
+        }
+
+        function setupEnterShortcuts() {
+            ['estudoTema', 'estudoHoras', 'estudoLink'].forEach(function(id) {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            registrarEstudo();
+                        }
+                    });
+                }
+            });
+
+            ['questaoNumero', 'questaoTempo', 'questaoLink'].forEach(function(id) {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            registrarQuestao();
+                        }
+                    });
+                }
+            });
+
+            [['metaDiariaInput', 'Diaria'], ['metaSemanalInput', 'Semanal']].forEach(function(pair) {
+                const el = document.getElementById(pair[0]);
+                if (el) {
+                    el.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            salvarMeta(pair[1], pair[0]);
+                        }
+                    });
+                }
+            });
+
+            const loteArea = document.getElementById('questoesLoteNumeros');
+            if (loteArea) {
+                loteArea.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' && e.ctrlKey) {
+                        e.preventDefault();
+                        registrarQuestoesEmLote();
+                    }
+                });
+            }
         }
 
         function atualizarInterface() {
@@ -841,13 +1106,15 @@ Pergunta 2;Resposta 2;"></textarea>
 
         function atualizarEstatisticas(stats) {
             if (!stats || !stats.perfil) return;
-            
+
             perfilData = stats.perfil;
             document.getElementById('userTitle').textContent = stats.perfil.titulo;
             document.getElementById('statHoras').textContent = stats.perfil.horasEstudadas.toFixed(1) + 'h';
             document.getElementById('statQuestoes').textContent = stats.perfil.questoesResolvidas;
             document.getElementById('statAcerto').textContent = stats.perfil.percentualAcerto + '%';
-            
+
+            atualizarCalendario(stats.calendario);
+
             if (stats.metas && stats.metas.length > 0) {
                 stats.metas.forEach(function(meta) {
                     if (meta.tipo === 'Diaria') {
@@ -855,11 +1122,29 @@ Pergunta 2;Resposta 2;"></textarea>
                         document.getElementById('progressDiaria').style.width = progresso + '%';
                         document.getElementById('textDiaria').textContent = meta.progresso + 'h / ' + meta.valor + 'h';
                         document.getElementById('metaDiaria').textContent = meta.valor;
+                        const metaDiariaInput = document.getElementById('metaDiariaInput');
+                        if (metaDiariaInput) metaDiariaInput.value = meta.valor;
                     } else if (meta.tipo === 'Semanal') {
                         const progresso = (meta.progresso / meta.valor) * 100;
                         document.getElementById('progressSemanal').style.width = progresso + '%';
                         document.getElementById('textSemanal').textContent = meta.progresso + 'h / ' + meta.valor + 'h';
                         document.getElementById('metaSemanal').textContent = meta.valor;
+                        const metaSemanalInput = document.getElementById('metaSemanalInput');
+                        if (metaSemanalInput) metaSemanalInput.value = meta.valor;
+                    } else if (meta.tipo === 'QuestoesDiarias') {
+                        const progresso = (meta.progresso / meta.valor) * 100;
+                        document.getElementById('progressQuestoesDia').style.width = progresso + '%';
+                        document.getElementById('textQuestoesDia').textContent = meta.progresso + ' / ' + meta.valor;
+                        document.getElementById('metaQuestoesDia').textContent = meta.valor;
+                        const metaQuestoesInput = document.getElementById('metaQuestoesDiaInput');
+                        if (metaQuestoesInput) metaQuestoesInput.value = meta.valor;
+                    } else if (meta.tipo === 'LeiSecaConstDiaria') {
+                        const progresso = (meta.progresso / meta.valor) * 100;
+                        document.getElementById('progressLeiSeca').style.width = progresso + '%';
+                        document.getElementById('textLeiSeca').textContent = meta.progresso + 'h / ' + meta.valor + 'h';
+                        document.getElementById('metaLeiSeca').textContent = meta.valor;
+                        const metaLeiSecaInput = document.getElementById('metaLeiSecaInput');
+                        if (metaLeiSecaInput) metaLeiSecaInput.value = meta.valor;
                     }
                 });
             }
@@ -873,6 +1158,82 @@ Pergunta 2;Resposta 2;"></textarea>
             const buttons = document.querySelectorAll('.nav-btn');
             buttons.forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
+        }
+
+        function atualizarCalendario(calendario) {
+            const dataStr = calendario && calendario.data ? calendario.data : '';
+            const itens = (calendario && Array.isArray(calendario.itens)) ? calendario.itens : [];
+            const concluidos = (calendario && Array.isArray(calendario.concluidos)) ? calendario.concluidos : [];
+
+            const dataLabel = document.getElementById('calendarioData');
+            if (dataLabel) dataLabel.textContent = dataStr ? ('Dia ' + dataStr) : '';
+
+            const lista = document.getElementById('calendarioLista');
+            const textarea = document.getElementById('calendarioItensInput');
+            if (textarea && itens.length > 0) {
+                textarea.value = itens.join('\n');
+            }
+
+            if (!lista) return;
+            lista.innerHTML = '';
+
+            if (!itens.length) {
+                const vazio = document.createElement('li');
+                vazio.textContent = 'Nenhum item cadastrado para hoje. Cole seu calendário e salve.';
+                lista.appendChild(vazio);
+            } else {
+                itens.forEach(function(item, index) {
+                    const li = document.createElement('li');
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.checked = concluidos[index] === true;
+                    checkbox.onchange = function() {
+                        marcarItemCalendario(index, checkbox.checked);
+                    };
+                    const span = document.createElement('span');
+                    span.textContent = item;
+                    li.appendChild(checkbox);
+                    li.appendChild(span);
+                    lista.appendChild(li);
+                });
+            }
+
+            const total = itens.length;
+            const feitos = concluidos.filter(Boolean).length;
+            const percent = total > 0 ? (feitos / total) * 100 : 0;
+            const barra = document.getElementById('progressCalendario');
+            const texto = document.getElementById('textCalendario');
+            if (barra) barra.style.width = percent + '%';
+            if (texto) texto.textContent = `${feitos} / ${total} concluído`;
+        }
+
+        function salvarCalendarioDia() {
+            const conteudo = document.getElementById('calendarioItensInput').value || '';
+            const itens = conteudo.split(/\n+/).map(v => v.trim()).filter(Boolean);
+
+            if (!itens.length) {
+                alert('Cole ao menos um item do calendário.');
+                return;
+            }
+
+            google.script.run
+                .withSuccessHandler(function(res) {
+                    if (res && res.success) {
+                        showNotification('Calendário do dia salvo!', 'success');
+                        carregarDados();
+                    }
+                })
+                .salvarCalendarioDoDia(itens);
+        }
+
+        function marcarItemCalendario(index, concluido) {
+            google.script.run
+                .withSuccessHandler(function(res) {
+                    if (res && res.success) {
+                        atualizarCalendario(res);
+                    }
+                })
+                .marcarItemCalendario(index, concluido);
         }
 
         function editarNome() {
@@ -893,15 +1254,27 @@ Pergunta 2;Resposta 2;"></textarea>
         function definirMeta(tipo) {
             const valor = prompt('Digite a meta em horas para ' + (tipo === 'Diaria' ? 'hoje' : 'esta semana') + ':');
             if (valor && !isNaN(valor) && parseFloat(valor) > 0) {
-                google.script.run
-                    .withSuccessHandler(function(result) {
-                        if (result.success) {
-                            showNotification('Meta definida!', 'success');
-                            carregarDados();
-                        }
-                    })
-                    .definirMeta(tipo, parseFloat(valor));
+                salvarMeta(tipo, null, parseFloat(valor));
             }
+        }
+
+        function salvarMeta(tipo, inputId, valorManual) {
+            const valorCampo = inputId ? parseFloat(document.getElementById(inputId).value) : null;
+            const valor = valorManual !== undefined ? valorManual : valorCampo;
+
+            if (!valor || isNaN(valor) || valor <= 0) {
+                alert('Digite um valor válido para a meta.');
+                return;
+            }
+
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result.success) {
+                        showNotification('Meta definida!', 'success');
+                        carregarDados();
+                    }
+                })
+                .definirMeta(tipo, parseFloat(valor));
         }
 
         function registrarEstudo() {
@@ -972,6 +1345,129 @@ Pergunta 2;Resposta 2;"></textarea>
                 .registrarQuestao(dados);
         }
 
+        function getNumerosQuestaoLote() {
+            const raw = document.getElementById('questoesLoteNumeros').value || '';
+            const candidatos = raw.split(/[\n,;]+/).map(v => v.trim()).filter(Boolean);
+            const unicos = [];
+            candidatos.forEach(function(numero) {
+                if (!unicos.includes(numero)) {
+                    unicos.push(numero);
+                }
+            });
+            return unicos.slice(0, 10);
+        }
+
+        function extrairQuestoesDoPDF() {
+            const fileId = (document.getElementById('pdfFileId').value || '').trim();
+            if (!fileId) {
+                alert('Informe o ID do PDF no Drive.');
+                return;
+            }
+
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result.success) {
+                        const numerosEncontrados = (result.texto.match(/Q?\s?(\d{2,6})/g) || []).map(function(item) {
+                            return item.replace(/[^0-9]/g, '').trim();
+                        }).filter(Boolean);
+                        const unicos = [];
+                        numerosEncontrados.forEach(function(num) {
+                            if (!unicos.includes(num)) {
+                                unicos.push(num);
+                            }
+                        });
+                        const limitados = unicos.slice(0, 10);
+                        if (limitados.length === 0) {
+                            alert('Não foi possível localizar números de questões no PDF.');
+                            return;
+                        }
+                        document.getElementById('questoesLoteNumeros').value = limitados.join('\n');
+                        showNotification('Foram sugeridas ' + limitados.length + ' questões do PDF.', 'success');
+                    } else {
+                        alert('Erro ao processar PDF: ' + result.error);
+                    }
+                })
+                .processarPDF(fileId);
+        }
+
+        function registrarQuestoesEmLote() {
+            const numeros = getNumerosQuestaoLote();
+            if (numeros.length === 0) {
+                alert('Informe ao menos uma questão (máximo de 10).');
+                return;
+            }
+
+            const dados = {
+                materia: document.getElementById('questaoLoteMateria').value,
+                dificuldade: document.getElementById('questaoLoteDificuldade').value,
+                acertou: document.getElementById('questaoLoteAcertou').value === 'true',
+                tempo: document.getElementById('questaoLoteTempo').value,
+                linkQC: document.getElementById('questaoLoteLink').value,
+                observacoes: 'Lote',
+                numeros: numeros
+            };
+
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result.success) {
+                        showNotification('+' + result.xpGanho + ' XP para ' + result.questoesRegistradas + ' questões!', 'success');
+                        if (result.levelUp) {
+                            showLevelUpAnimation(result.novoNivel);
+                            setTimeout(function() {
+                                showNotification('🎉 Novo Título: ' + result.titulo, 'level-up');
+                            }, 1600);
+                        }
+                        document.getElementById('questoesLoteNumeros').value = '';
+                        document.getElementById('pdfFileId').value = '';
+                        carregarDados();
+                    } else {
+                        alert(result.error || 'Não foi possível registrar o lote.');
+                    }
+                })
+                .registrarQuestoesEmLote(dados);
+        }
+
+        function registrarBlocoQuestoes() {
+            const total = parseInt(document.getElementById('blocoTotal').value, 10) || 0;
+            const acertos = parseInt(document.getElementById('blocoAcertos').value, 10) || 0;
+
+            if (total <= 0 || total > 20) {
+                alert('Informe entre 1 e 20 questões.');
+                return;
+            }
+            if (acertos < 0 || acertos > total) {
+                alert('Acertos não podem exceder o total.');
+                return;
+            }
+
+            const dados = {
+                totalQuestoes: total,
+                acertos: acertos,
+                materia: document.getElementById('blocoMateria').value,
+                dificuldade: document.getElementById('blocoDificuldade').value,
+                tempo: document.getElementById('blocoTempo').value,
+                linkQC: document.getElementById('blocoLink').value,
+                observacoes: 'Bloco rápido'
+            };
+
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result.success) {
+                        showNotification('+' + result.xpGanho + ' XP para ' + result.questoesRegistradas + ' questões!', 'success');
+                        if (result.levelUp) {
+                            showLevelUpAnimation(result.novoNivel);
+                            setTimeout(function() {
+                                showNotification('🎉 Novo Título: ' + result.titulo, 'level-up');
+                            }, 1600);
+                        }
+                        carregarDados();
+                    } else {
+                        alert(result.error || 'Não foi possível registrar o bloco.');
+                    }
+                })
+                .registrarBlocoQuestoes(dados);
+        }
+
         function criarFlashcard() {
             const dados = {
                 materia: document.getElementById('fcMateria').value,
@@ -999,7 +1495,7 @@ Pergunta 2;Resposta 2;"></textarea>
         function importarCSV() {
             const materia = document.getElementById('csvMateria').value;
             const content = document.getElementById('csvContent').value;
-            
+
             if (!content.trim()) {
                 alert('Cole o conteúdo CSV!');
                 return;
@@ -1013,6 +1509,17 @@ Pergunta 2;Resposta 2;"></textarea>
                     }
                 })
                 .importarFlashcardsCSV(content, materia);
+        }
+
+        function salvarBlocoNotas() {
+            const texto = document.getElementById('blocoNotas').value || '';
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result && result.success) {
+                        showNotification('Bloco salvo!', 'success');
+                    }
+                })
+                .salvarBlocoNotas(texto);
         }
 
         function showNotification(message, type) {
@@ -1080,6 +1587,26 @@ Pergunta 2;Resposta 2;"></textarea>
             setTimeout(function() {
                 animation.classList.remove('show');
             }, 1500);
+        }
+
+        // Controles auxiliares do bloco rápido
+        const blocoTotalInput = document.getElementById('blocoTotal');
+        const blocoAcertosInput = document.getElementById('blocoAcertos');
+        if (blocoTotalInput && blocoAcertosInput) {
+            blocoTotalInput.addEventListener('input', function() {
+                if (blocoAcertosInput.value > blocoTotalInput.value) {
+                    blocoAcertosInput.value = blocoTotalInput.value;
+                }
+            });
+
+            blocoAcertosInput.addEventListener('input', function() {
+                if (blocoAcertosInput.value > blocoTotalInput.value) {
+                    blocoAcertosInput.value = blocoTotalInput.value;
+                }
+                if (blocoAcertosInput.value < 0) {
+                    blocoAcertosInput.value = 0;
+                }
+            });
         }
     </script>
 </body>
